@@ -9,7 +9,8 @@ dp = Dispatcher()
 @dp.message(Command("myid"))
 async def get_user_id(message: types.Message):
     user_id = message.from_user.id
-    await message.answer(f"Ваш ID: {user_id}")
+    username = message.from_user.username
+    await message.answer(f"Ваш ID: {user_id}, @{username}")
 
 if __name__ == '__main__':
     dp.run_polling(bot)

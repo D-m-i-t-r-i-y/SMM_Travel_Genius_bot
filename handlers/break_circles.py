@@ -37,3 +37,8 @@ def save_config(user_id: int, data: dict):
     except Exception as e:
         logging.error(f"Ошибка сохранения конфига: {e}")
         raise
+
+def is_bot_user(username: str) -> bool:
+    with open("bot_users.json", "r") as f:
+        bot_users = json.load(f)
+    return username in bot_users
