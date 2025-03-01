@@ -19,19 +19,18 @@ from states.article_states import ArticleStates
 from handlers.break_circles import load_config
 from handlers.email_handler import process_email
 from handlers.admin_utils import notify_admin
-from config import IMAGE_STORAGE_PATH, LOGGING_LEVEL, API_SEMAPHORE, DEFAULT_IMAGE
+from config import PROXYAPI_KEY, IMAGE_STORAGE_PATH, LOGGING_LEVEL, API_SEMAPHORE, DEFAULT_IMAGE
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=LOGGING_LEVEL)
 
 MAX_STORED_IMAGES = 50
 
-
 async def download_image(url: str, user_id: int) -> Optional[str]:
     """Загружает и сохраняет изображение с указанного URL"""
     try:
         async with API_SEMAPHORE:
-            decoded_url = unquote(url)
+            decoded_url = url #unquote(url)
 
             if not decoded_url.startswith(('http://', 'https://')):
                 logger.error(f"Invalid URL: {decoded_url}")

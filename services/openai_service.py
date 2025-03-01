@@ -3,13 +3,20 @@ import aiohttp
 from config import PROXYAPI_KEY, API_URL
 import logging
 from handlers.admin_utils import notify_admin
+import inspect
 
 async def generate_with_proxyapi(endpoint: str, payload: dict) -> dict:
     headers = {
         "Authorization": f"Bearer {PROXYAPI_KEY}",
         "Content-Type": "application/json"
     }
-
+    func_name = inspect.currentframe().f_code.co_name
+    logging.info(f"\n\n[{func_name}]:\n"
+                 f"Endpoint: {endpoint}\n"
+                 f"Payload: {payload}\n"
+                 f"URL: {API_URL}/{endpoint}\n"
+                 f"Headers: {headers}\n\n"
+                 )
     async with aiohttp.ClientSession() as session:
         async with session.post(
                 f"{API_URL}/{endpoint}",
@@ -115,14 +122,16 @@ async def generate_image(prompt: str) -> str:
     try:
         payload = {
             "model": "dall-e-3",
-            "prompt": f"Реалистичное фото для статьи о путешествиях: {prompt}."
-                      "Цель: создать картинку, которая вызывает желание посентить эти места" 
-                      "и она будет соответствовать статье. ",
+            "prompt": (f"Реалистичное фото для статьи о путешествиях: {prompt}."
+                      "Цель: создать картинку, которая вызывает желание посетить эти места" 
+                      "и она будет соответствовать статье. ")[:4000],
             "size": "1024x1024",
-            "quality": "standard"
+            "n": 1,
+            "style": "natural"
+            #"quality": "standard"
         }
         response = await generate_with_proxyapi("images/generations", payload)
-        logging.info(f"Генерация сервисом иллюстрации завершена")
+        logging.info(f"Генерация сервисом иллюстрации завершена {response['data'][0]['url']}")
         return response['data'][0]['url']
     except Exception as e:
         logging.error(f"Image generation error: {e}")
